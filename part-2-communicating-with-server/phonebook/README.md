@@ -1,14 +1,13 @@
 # Phonebook (Full Stack Open — Part 2)
 
-A React phonebook application with full CRUD persistence built as part of Full Stack Open Part 2 (Exercises 2.6–2.15).
+A React phonebook application with full CRUD persistence, styled notifications, and error handling built as part of Full Stack Open Part 2 (Exercises 2.6–2.17).
 
 ## Features
 
 - Full CRUD operations (`GET`, `POST`, `PUT`, `DELETE`) backed by JSON Server
 - Dedicated Axios service module (`src/services/persons.js`)
-- Add new contacts and persist them to `db.json`
-- Update an existing contact's phone number after confirmation
-- Delete contacts with confirmation prompt
+- Styled success and error notification banners (`Notification` component + `src/index.css`)
+- Graceful error handling when modifying or deleting contacts already removed from the server
 - Real-time case-insensitive contact search
 
 ## Run Locally

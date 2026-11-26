@@ -3,18 +3,27 @@ import personService from "./services/persons";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
+import Notification from "./components/Notification";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [filter, setFilter] = useState("");
+  const [notification, setNotification] = useState(null);
 
   useEffect(() => {
     personService.getAll().then((initialPersons) => {
       setPersons(initialPersons);
     });
   }, []);
+
+  const showNotification = (message, type = "success") => {
+    setNotification({ message, type });
+    setTimeout(() => {
+      setNotification(null);
+    }, 5000);
+  };
 
   const addPerson = (event) => {
     event.preventDefault();
@@ -44,6 +53,14 @@ const App = () => {
             );
             setNewName("");
             setNewNumber("");
+            showNotification(`Updated ${returnedPerson.name}'s number`);
+          })
+          .catch(() => {
+            showNotification(
+              `Information of ${existingPerson.name} has already been removed from server`,
+              "error",
+            );
+            setPersons(persons.filter((p) => p.id !== existingPerson.id));
           });
       }
       return;
@@ -58,14 +75,25 @@ const App = () => {
       setPersons(persons.concat(returnedPerson));
       setNewName("");
       setNewNumber("");
+      showNotification(`Added ${returnedPerson.name}`);
     });
   };
 
   const deletePerson = (person) => {
     if (window.confirm(`Delete ${person.name} ?`)) {
-      personService.remove(person.id).then(() => {
-        setPersons(persons.filter((p) => p.id !== person.id));
-      });
+      personService
+        .remove(person.id)
+        .then(() => {
+          setPersons(persons.filter((p) => p.id !== person.id));
+          showNotification(`Deleted ${person.name}`);
+        })
+        .catch(() => {
+          showNotification(
+            `Information of ${person.name} has already been removed from server`,
+            "error",
+          );
+          setPersons(persons.filter((p) => p.id !== person.id));
+        });
     }
   };
 
@@ -78,6 +106,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification notification={notification} />
       <Filter
         filter={filter}
         onFilterChange={(e) => setFilter(e.target.value)}
